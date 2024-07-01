@@ -10,33 +10,40 @@ import axios from "axios";
 
 const inter = Inter({ subsets: ["latin"] });
 
-
-
 export default function Home() {
-
   const [toggleSidebar, setToggleSidebar] = useState(false);
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
 
-  const fetchData = async() => {
-      const response = await axios.get(`https://api.unsplash.com/photos/?client_id=VDgdeNCbCcqgeHCgEKhM1h29TLdxhPDXLokXSVOL970&per_page=40`)
-      const data = await response.data
-      setData(data)
-  }
+  const API_KEY = process.env.NEXT_PUBLIC_UNSPLASH_KEY
 
+  const fetchData = async () => {
+    const response = await axios.get(
+      `https://api.unsplash.com/photos/?client_id=${API_KEY}&per_page=40`
+    );
+    const data = await response.data;
+    setData(data);
+  };
 
-    useEffect(() =>{
-        fetchData()
-    }, [])
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <>
       <NavBar />
-      <FilterandSearch  toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar}/>      
-      <div className={toggleSidebar?"gallery expanded":"gallery"}>
-      {toggleSidebar && <Sidebar toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar}/>}
-        <div className="cards">
-          {data.length > 0 && (
-            data.map((d) => <Card data={d}/>)
-          )}
+      <FilterandSearch
+        toggleSidebar={toggleSidebar}
+        setToggleSidebar={setToggleSidebar}
+      />
+      <div className={toggleSidebar ? "gallery expanded" : "gallery"}>
+        {toggleSidebar && (
+          <Sidebar
+            toggleSidebar={toggleSidebar}
+            setToggleSidebar={setToggleSidebar}
+          />
+        )}
+        <div className="flex flex-wrap justify-center max-h-screen overflow-y-scroll">
+          {data.length > 0 && data.map((d) => <Card key={d.id} data={d} />)}
         </div>
       </div>
       <Footer />
