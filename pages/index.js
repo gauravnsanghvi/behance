@@ -1,20 +1,16 @@
-import Image from "next/image";
-import { Inter } from "next/font/google";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import NavBar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import FilterandSearch from "@/components/shared/Search";
 import Sidebar from "@/components/shared/Sidebar";
 import Card from "@/components/Home/Card";
-import { useState, useEffect } from "react";
-import axios from "axios";
 
-const inter = Inter({ subsets: ["latin"] });
-
-export default function Home() {
+const Home = () => {
   const [toggleSidebar, setToggleSidebar] = useState(false);
   const [data, setData] = useState([]);
 
-  const API_KEY = process.env.NEXT_PUBLIC_UNSPLASH_KEY
+  const API_KEY = process.env.NEXT_PUBLIC_UNSPLASH_KEY;
 
   const fetchData = async () => {
     const response = await axios.get(
@@ -28,12 +24,17 @@ export default function Home() {
     fetchData();
   }, []);
 
+  const handleSearch = (searchResults) => {
+    setData(searchResults);
+  };
+
   return (
     <>
       <NavBar />
       <FilterandSearch
         toggleSidebar={toggleSidebar}
         setToggleSidebar={setToggleSidebar}
+        onSearch={handleSearch}
       />
       <div className={toggleSidebar ? "gallery expanded" : "gallery"}>
         {toggleSidebar && (
@@ -43,10 +44,16 @@ export default function Home() {
           />
         )}
         <div className="flex flex-wrap justify-center max-h-screen overflow-y-scroll">
-          {data.length > 0 && data.map((d) => <Card key={d.id} data={d} />)}
+          {data.length > 0 ? (
+            data.map((d) => <Card key={d.id} data={d} />)
+          ) : (
+            <p>No results found.</p>
+          )}
         </div>
       </div>
       <Footer />
     </>
   );
-}
+};
+
+export default Home;
